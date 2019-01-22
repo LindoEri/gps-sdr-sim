@@ -1,0 +1,140 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GPS模拟"
+        xmlns:WindowsPresentation="clr-namespace:GMap.NET.WindowsPresentation;assembly=GMap.NET.WindowsPresentation" x:Class="GPS模拟.MainWindow"
+        mc:Ignorable="d"
+        Title="GPS Simulator" Height="800" Width="1000" Loaded="Window_Loaded" Closing="Window_Closing" FontSize="15" Icon="Resources/ICO.jpg">
+    <Grid Background="AliceBlue">
+        <Grid.Resources>
+            <ContextMenu x:Key="CM">
+                <MenuItem Header="瞬间移动至此处" Click="DirectMove_Click" />
+                <MenuItem Header="匀速平移至此处" Click="LinearMove_Click" />
+            </ContextMenu>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="120"/>
+            <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="20"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="20"/>
+        </Grid.ColumnDefinitions>
+        <WindowsPresentation:GMapControl x:Name="g" Grid.Column="1" Grid.Row="1" Margin="0" ContextMenu="{StaticResource CM}"/>
+        <Grid Grid.Column="1" Grid.Row="2" x:Name="Operate" Visibility="Hidden">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="0.2*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="0.2*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" Grid.RowSpan="2"  HorizontalAlignment="Center" VerticalAlignment="Center" >
+                <Label>模拟定位误差(0~5m)：</Label>
+                <Slider Width="180" Minimum="0" Maximum="5" TickFrequency="1" x:Name="GPSInaccu" ValueChanged="GPSInaccu_ValueChanged"/>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" >
+                <Label>模拟移动速度(10~150km/h)：</Label>
+                <Slider Width="180" Minimum="10" Maximum="150" TickFrequency="10" x:Name="Spd" Value="30"/>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" >
+                <Label>模拟速度误差(0%~±30%)：</Label>
+                <Slider Width="180" Minimum="0" Maximum="0.3" TickFrequency="0.05" x:Name="SpdInaccu"/>
+            </StackPanel>
+            <StackPanel Grid.Column="3" Grid.RowSpan="2"  HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="Target">
+                <Label>目标位置：</Label>
+                <StackPanel Orientation="Horizontal">
+                    <Label>经度</Label>
+                    <TextBox Width="140" VerticalAlignment="Center" IsReadOnly="True" HorizontalAlignment="Center" TextAlignment="Center" Text="{Binding Path=Lng,Mode=OneWay}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label>纬度</Label>
+                    <TextBox Width="140" VerticalAlignment="Center" IsReadOnly="True"  HorizontalAlignment="Center" TextAlignment="Center"  Text="{Binding Path=Lat,Mode=OneWay}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label>海拔</Label>
+                    <TextBox Width="140" VerticalAlignment="Center" IsReadOnly="True"  HorizontalAlignment="Center" TextAlignment="Center"  Text="{Binding Path=Ele,Mode=OneWay}"/>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Grid.Column="4" Grid.RowSpan="2"  HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="Info">
+                <Label>当前位置：</Label>
+                <StackPanel Orientation="Horizontal">
+                    <Label>经度</Label>
+                    <TextBox Width="140" VerticalAlignment="Center" IsReadOnly="True" HorizontalAlignment="Center" TextAlignment="Center" Text="{Binding Path=Lng,Mode=OneWay}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label>纬度</Label>
+                    <TextBox Width="140" VerticalAlignment="Center" IsReadOnly="True"  HorizontalAlignment="Center" TextAlignment="Center"  Text="{Binding Path=Lat,Mode=OneWay}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label>海拔</Label>
+                    <TextBox Width="140" VerticalAlignment="Center" IsReadOnly="True"  HorizontalAlignment="Center" TextAlignment="Center"  Text="{Binding Path=Ele,Mode=OneWay}"/>
+                </StackPanel>
+            </StackPanel>
+            <Button Grid.Row="1" Grid.Column="6" Height="40" Width="90" Click="Disconnect_Click">断开连接</Button>
+        </Grid>
+        <Grid Grid.Column="1" Grid.Row="2" x:Name="Option" Visibility="Visible">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="0.2*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="0.2*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="0.2*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal">
+                    <Label>IP地址</Label>
+                    <TextBox Width="125" VerticalAlignment="Center" x:Name="IPAddr" TextAlignment="Center"></TextBox>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Label>　端口</Label>
+                    <TextBox Width="125" VerticalAlignment="Center" x:Name="Port" TextAlignment="Center"></TextBox>
+                </StackPanel>
+                <Rectangle Height="10"></Rectangle>
+                <Button x:Name="Connnect" Click="Connnect_Click">连接GNURadio</Button>
+            </StackPanel>
+            <StackPanel Grid.Column="2" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Label>星历设置：</Label>
+                <Rectangle Height="5"></Rectangle>
+                <RadioButton IsChecked="True" x:Name="AutoNav">
+                    <StackPanel>
+                        <TextBlock>自动获取</TextBlock>
+                        <TextBlock FontSize="10">源：ftp://igs.gnsswhu.cn/</TextBlock>
+                    </StackPanel>
+                </RadioButton>
+                <Rectangle Height="5"></Rectangle>
+                <RadioButton x:Name="FileNav" Checked="FileNav_Checked">指定文件</RadioButton>
+            </StackPanel>
+            <StackPanel Grid.Column="4" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Label>纬度获取：</Label>
+                <Rectangle Height="5"></Rectangle>
+                <Label>谷歌地图海拔API key[可选]：</Label>
+                <TextBox x:Name="EleAPIKey"></TextBox>
+            </StackPanel>
+            <StackPanel Grid.Column="6" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal">
+                    <Label>纬度默认值：</Label>
+                    <TextBox Width="60" TextAlignment="Center" VerticalAlignment="Center" x:Name="EleDefault"></TextBox>
+                    <Label>米</Label>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+        <StackPanel Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="3" Visibility="Visible" HorizontalAlignment="Right">
+            <Label FontSize="12" Foreground="Blue" MouseDoubleClick="Label_MouseDoubleClick">开源许可</Label>
+        </StackPanel>
+    </Grid>
+</Window>
